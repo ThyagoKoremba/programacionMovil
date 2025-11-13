@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,6 +35,7 @@ public class Principal extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
 
+        // Referencias UI
         txtUsuario = findViewById(R.id.txtUsuario);
         txtTotalDeuda = findViewById(R.id.txtTotalDeuda);
         recyclerCuentas = findViewById(R.id.recyclerCuentas);
@@ -42,9 +44,21 @@ public class Principal extends AppCompatActivity {
 
         dbHelper = new DBHelper(this);
 
+        // Recuperar datos enviados desde MainActivity
         Intent intent = getIntent();
         usuarioId = intent.getIntExtra("usuario_id", -1);
         usuarioNombre = intent.getStringExtra("usuario_nombre");
+
+        // Validación: si algo falló, evitar crash
+        if (usuarioId == -1) {
+            Toast.makeText(this, "Error al obtener usuario", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        if (usuarioNombre == null || usuarioNombre.isEmpty()) {
+            usuarioNombre = "Usuario";
+        }
 
         txtUsuario.setText("Hola, " + usuarioNombre);
 
@@ -53,6 +67,9 @@ public class Principal extends AppCompatActivity {
         btnAgregarCuenta.setOnClickListener(v -> mostrarDialogNuevaCuenta());
     }
 
+    /**
+     * Carga las cuentas del usuario desde la base de datos y actualiza la lista
+     */
     private void cargarCuentas() {
         List<Cuenta> cuentas = dbHelper.getCuentasByUsuario(usuarioId);
         double totalDeuda = 0;
@@ -66,9 +83,13 @@ public class Principal extends AppCompatActivity {
         recyclerCuentas.setAdapter(cuentaAdapter);
     }
 
+    /**
+     * Muestra un cuadro de diálogo para agregar una nueva cuenta
+     */
     private void mostrarDialogNuevaCuenta() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_nueva_cuenta);
+        dialog.setCancelable(true);
 
         EditText inputDescripcion = dialog.findViewById(R.id.inputDescripcion);
         EditText inputTotal = dialog.findViewById(R.id.inputTotal);
@@ -80,19 +101,38 @@ public class Principal extends AppCompatActivity {
             String totalStr = inputTotal.getText().toString().trim();
             String cuotasStr = inputCuotas.getText().toString().trim();
 
+            // Validaciones básicas
             if (descripcion.isEmpty() || totalStr.isEmpty() || cuotasStr.isEmpty()) {
-                inputDescripcion.setError("Completa todos los campos");
+                Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            double total = Double.parseDouble(totalStr);
-            int cuotas = Integer.parseInt(cuotasStr);
+            double total;
+            int cuotas;
+            try {
+                total = Double.parseDouble(totalStr);
+                cuotas = Integer.parseInt(cuotasStr);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Verifica los valores numéricos", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
+            if (cuotas <= 0 || total <= 0) {
+                Toast.makeText(this, "Los valores deben ser mayores que cero", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Crear cuenta nueva y guardar
             Cuenta nuevaCuenta = new Cuenta(0, descripcion, total, cuotas, 0);
-            dbHelper.addCuenta(nuevaCuenta, usuarioId);
+            long idCuenta = dbHelper.addCuenta(nuevaCuenta, usuarioId);
 
-            dialog.dismiss();
-            cargarCuentas();
+            if (idCuenta != -1) {
+                Toast.makeText(this, "Cuenta agregada correctamente", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                cargarCuentas();
+            } else {
+                Toast.makeText(this, "Error al guardar la cuenta", Toast.LENGTH_SHORT).show();
+            }
         });
 
         dialog.show();

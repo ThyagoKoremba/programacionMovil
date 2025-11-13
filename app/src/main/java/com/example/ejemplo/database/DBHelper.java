@@ -121,28 +121,25 @@ public class DBHelper extends SQLiteAssetHelper {
      *   almacenar y comparar hashes en lugar de passwords en claro. ESTO NO IMPORTA PARA EL TRANSCURSO DE ESTA CLASE.
      */
     public User comprobarUsuarioLocal(String nombreUsuario, String password) {
-        User user = new User();
-        user.setId(-1); // default "not found" indicator
+        User user = null;
 
-        // Obtenemos DB en modo lectura
         SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_USUARIO + " WHERE " + COL_NOMBRE + " = ? AND " + COL_PASSWORD + " = ?",
+                new String[]{nombreUsuario, password}
+        );
 
-        // Query parametrizada para evitar inyección SQL
-        String query = "SELECT * FROM " + TABLE_USUARIO + " WHERE " + COL_NOMBRE + " = ? AND " + COL_PASSWORD + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{nombreUsuario, password});
-
-        // Si el cursor tiene resultados, movemos al primero y leemos columnas
         if (cursor != null && cursor.moveToFirst()) {
+            user = new User();
             user.setId(cursor.getLong(cursor.getColumnIndexOrThrow(COL_ID)));
             user.setNombreUsuario(cursor.getString(cursor.getColumnIndexOrThrow(COL_NOMBRE)));
             user.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(COL_PASSWORD)));
         }
 
-        // Cerramos cursor y DB para liberar recursos
         if (cursor != null) cursor.close();
         db.close();
 
-        return user;
+        return user; // Si no lo encuentra, devuelve null
     }
 
     /**
