@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.ejemplo.modelos.Cuenta;
 import com.example.ejemplo.modelos.User;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -13,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
      ██████╗ ██████╗     ██╗  ██╗███████╗██╗     ██████╗ ███████╗██████╗
@@ -226,5 +229,51 @@ public class DBHelper extends SQLiteAssetHelper {
         int rowsDeleted = db.delete(TABLE_USUARIO, COL_NOMBRE + " = ?", new String[]{nombreUsuario});
         db.close();
         return rowsDeleted;
+    }
+
+    public long addCuenta(Cuenta cuenta, int usuarioId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("descripcion", cuenta.getDescripcion());
+        values.put("total_precio", cuenta.getTotalPrecio());
+        values.put("cantidad_cuotas", cuenta.getCantidadCuotas());
+        values.put("cantidad_pagadas", cuenta.getCantidadPagadas());
+
+        long cuentaId = db.insert("cuentas", null, values);
+
+        if (cuentaId != -1) {
+            ContentValues rel = new ContentValues();
+            rel.put("usuario_id", usuarioId);
+            rel.put("cuenta_id", cuentaId);
+            db.insert("usuario_cuentas", null, rel);
+        }
+
+        return cuentaId;
+    }
+
+    public List<Cuenta> getCuentasByUsuario(int usuarioId) {
+        SQLiteDatabase db = getReadableDatabase();
+        List<Cuenta> lista = new ArrayList<>();
+
+        String query = "SELECT c.id, c.descripcion, c.total_precio, c.cantidad_cuotas, c.cantidad_pagadas " +
+                "FROM cuentas c " +
+                "JOIN usuario_cuentas uc ON uc.cuenta_id = c.id " +
+                "WHERE uc.usuario_id = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(usuarioId)});
+        if (cursor.moveToFirst()) {
+            do {
+                Cuenta cuenta = new Cuenta(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getDouble(2),
+                        cursor.getInt(3),
+                        cursor.getInt(4)
+                );
+                lista.add(cuenta);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return lista;
     }
 }

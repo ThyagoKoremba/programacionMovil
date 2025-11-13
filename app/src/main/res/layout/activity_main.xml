@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  *******************************
-  *  Layout: activity_main.xml   *
-  *  Descripción: pantalla de    *
-  *  login con logo + tarjeta    *
-  *  central que contiene los    *
-  *  campos usuario/contraseña   *
-  *******************************
--->
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,31 +6,19 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f5f5f5"
+    android:background="#0b110f"
     tools:context=".actividades.MainActivity">
 
-    <!--
-      Logo superior.
-      - width = 0dp + constraints -> se estira horizontalmente según las constraints del card.
-      - src: drawable/logo_incade (recomendación: usar vector si es posible para escalado).
-    -->
     <ImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:src="@drawable/logo_incade"
-        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/logo"
+        app:layout_constraintBottom_toTopOf="@id/main__login_card"
         app:layout_constraintEnd_toEndOf="@id/main__login_card"
         app:layout_constraintStart_toStartOf="@id/main__login_card"
-        app:layout_constraintBottom_toTopOf="@id/main__login_card"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.431" />
 
-    <!--
-      Tarjeta central (ConstraintLayout) que actúa como "card" de login.
-      - marginHorizontal para separar de los bordes.
-      - background -> @drawable/card_back (puede contener shape con esquinas y sombra)
-      - elevation para dar profundidad.
-      - padding interno 25dp para separar contenido del borde.
-      - vertical_bias=0.75 -> posiciona la card hacia la parte baja del espacio disponible.
-    -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main__login_card"
         android:layout_width="0dp"
@@ -54,26 +33,16 @@
         android:padding="25dp"
         app:layout_constraintVertical_bias="0.75">
 
-        <!--
-          Label "Usuario"
-          - Texto simple que indica el campo siguiente.
-        -->
         <TextView
             android:id="@+id/main__label_usuario"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Usuario"
             android:textSize="16sp"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <!--
-          EditText para ingresar el nombre de usuario.
-          - width 0dp + start/end constraints -> ocupa el ancho disponible dentro de la card.
-          - inputType="text" (si necesitás email usar textEmailAddress).
-          - textColorHint con tono claro.
-        -->
         <EditText
             android:id="@+id/main__input_usuario"
             android:layout_width="0dp"
@@ -81,34 +50,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/main__label_usuario"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textColorHint="#e3e3e3"
             android:inputType="text"
             android:textSize="15sp"
             android:hint="Nombre usuario"
             android:layout_marginTop="5dp" />
 
-        <!--
-          Label "Contraseña"
-          - separador visual con marginTop para respirar entre campos.
-        -->
         <TextView
             android:id="@+id/main__label_contrasena"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Contraseña"
             android:textSize="16sp"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:layout_marginTop="15dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/main__input_usuario"/>
 
-        <!--
-          EditText de contraseña:
-          - inputType="textPassword" oculta el texto ingresado.
-          - recuerda que esto solo controla la visibilidad; el manejo seguro de contraseñas
-            debe hacerse en la capa de almacenamiento / servidor (hash + salt).
-        -->
+
         <EditText
             android:id="@+id/main__input_contrasena"
             android:layout_width="0dp"
@@ -123,13 +83,6 @@
             android:hint="Contraseña"
             android:layout_marginTop="5dp" />
 
-        <!--
-          Botón Ingresar:
-          - width 0dp -> ocupa todo el ancho interior de la card.
-          - backgroundTint con color principal.
-          - elevation alto para resaltar.
-          - Si necesitás accesibilidad, agregar android:contentDescription o usar material Button.
-        -->
         <Button
             android:id="@+id/main__button_ingresar"
             android:layout_width="0dp"

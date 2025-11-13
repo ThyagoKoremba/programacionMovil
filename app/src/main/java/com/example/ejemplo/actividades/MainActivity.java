@@ -132,9 +132,13 @@ public class MainActivity extends AppCompatActivity {
                  * Mejor usar hashes y validar con funciones seguras.
                  */
                 if (usuarioIngresado.getId() != -1) {
-                    // Usuario válido -> vamos a la pantalla principal
                     Intent intent = new Intent(MainActivity.this, Principal.class);
+                    intent.putExtra("usuario_id", (int) usuarioIngresado.getId());
+                    intent.putExtra("usuario_nombre", usuarioIngresado.getNombreUsuario());
                     startActivity(intent);
+
+
+
                 } else {
                     // Usuario inválido -> feedback al usuario
                     Toast.makeText(MainActivity.this, "Usuario no existe", Toast.LENGTH_SHORT).show();
