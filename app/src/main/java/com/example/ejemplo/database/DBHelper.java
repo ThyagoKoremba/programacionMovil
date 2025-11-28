@@ -139,7 +139,7 @@ public class DBHelper extends SQLiteAssetHelper {
         if (cursor != null) cursor.close();
         db.close();
 
-        return user; // Si no lo encuentra, devuelve null
+        return user;
     }
 
     /**

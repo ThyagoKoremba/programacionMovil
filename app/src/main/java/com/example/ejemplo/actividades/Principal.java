@@ -79,7 +79,14 @@ public class Principal extends AppCompatActivity {
         }
 
         txtTotalDeuda.setText("Total pendiente: $" + String.format("%.2f", totalDeuda));
-        cuentaAdapter = new CuentaAdapter(cuentas);
+
+        cuentaAdapter = new CuentaAdapter(cuentas, this);
+        recyclerCuentas.setAdapter(cuentaAdapter);
+
+
+
+
+
         recyclerCuentas.setAdapter(cuentaAdapter);
     }
 
