@@ -67,6 +67,11 @@ public class Principal extends AppCompatActivity {
         btnAgregarCuenta.setOnClickListener(v -> mostrarDialogNuevaCuenta());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarCuentas();  // Recarga la lista al volver desde DetalleCuentaActivity
+    }
     /**
      * Carga las cuentas del usuario desde la base de datos y actualiza la lista
      */

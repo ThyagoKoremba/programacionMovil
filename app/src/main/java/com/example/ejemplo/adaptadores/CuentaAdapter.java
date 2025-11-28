@@ -41,14 +41,19 @@ public class CuentaAdapter extends RecyclerView.Adapter<CuentaAdapter.ViewHolder
         holder.txtDescripcion.setText(cuenta.getDescripcion());
         holder.txtTotal.setText("Total: $" + cuenta.getTotalPrecio());
         holder.txtFaltante.setText("Restante: $" + cuenta.getMontoRestante());
+        holder.txtCuotas.setText("Cuotas: " + cuenta.getCantidadPagadas() + " / " + cuenta.getCantidadCuotas());
 
-        // 📌 Click → abrir DetalleCuentaActivity
+        // 📌 Click → Abrir DetalleCuentaActivity
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetalleCuentaActivity.class);
+
+            // 🔥 Ahora enviamos también el ID real de la cuenta
+            intent.putExtra("id_cuenta", cuenta.getId());
             intent.putExtra("descripcion", cuenta.getDescripcion());
             intent.putExtra("total", cuenta.getTotalPrecio());
             intent.putExtra("cuotas", cuenta.getCantidadCuotas());
             intent.putExtra("pagadas", cuenta.getCantidadPagadas());
+
             context.startActivity(intent);
         });
     }

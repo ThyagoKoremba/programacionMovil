@@ -273,4 +273,11 @@ public class DBHelper extends SQLiteAssetHelper {
         cursor.close();
         return lista;
     }
+
+    public boolean eliminarCuenta(int cuentaId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int filas = db.delete("cuentas", "id = ?", new String[]{String.valueOf(cuentaId)});
+        return filas > 0;
+    }
+
 }
